@@ -1,10 +1,10 @@
 #ifndef INC_SERIALIZE_H_
 #define INC_SERIALIZE_H_
 
+#include <Board_types.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include "Board1_types.h"
 
 /* Prototipi */
 size_t serializeLocalStateB1(uint8_t *buf, const BUS_LocalStateB1 *state);

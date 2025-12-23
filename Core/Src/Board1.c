@@ -17,12 +17,9 @@
  * Validation result: Not run
  */
 
+#include <Board_types.h>
 #include "Board1.h"
 #include "rtwtypes.h"
-#include "Board1_types.h"
-
-
-// NOSTRI INCLUDE
 #include "serialize.h"
 #include "deserialize.h"
 #include "stubFunctions.h"

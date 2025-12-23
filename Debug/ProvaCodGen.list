@@ -35,17 +35,17 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  15 .debug_rnglists 0000092e  00000000  00000000  0001e048  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  0002702e  00000000  00000000  0001e976  2**0
+ 16 .debug_macro  00026fbf  00000000  00000000  0001e976  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00010b86  00000000  00000000  000459a4  2**0
+ 17 .debug_line   00010b80  00000000  00000000  00045935  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000ed2ce  00000000  00000000  0005652a  2**0
+ 18 .debug_str    000ed2ce  00000000  00000000  000564b5  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  001437f8  2**0
+ 19 .comment      00000043  00000000  00000000  00143783  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00004490  00000000  00000000  0014383c  2**2
+ 20 .debug_frame  00004490  00000000  00000000  001437c8  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000074  00000000  00000000  00147ccc  2**0
+ 21 .debug_line_str 00000074  00000000  00000000  00147c58  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -3443,8 +3443,8 @@ void UartReceiveIT(uint8_t *pData, size_t size)
  8001d10:	6078      	str	r0, [r7, #4]
  8001d12:	6039      	str	r1, [r7, #0]
     /* Stub */
-    (void)pData;
-    (void)size;
+    //(void)pData;
+    //(void)size;
 }
  8001d14:	bf00      	nop
  8001d16:	370c      	adds	r7, #12

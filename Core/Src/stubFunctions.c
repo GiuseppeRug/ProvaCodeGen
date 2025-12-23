@@ -1,7 +1,7 @@
+#include <Board_types.h>
 #include "stubFunctions.h"
 
 // Da levareeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-#include "Board1_types.h"
 #include "deserialize.h"
 #include "print.h"
 /* Implementazioni stub (funzioni vuote) */
@@ -27,6 +27,6 @@ void UartTransmitIT(uint8_t *pData, size_t size)
 void UartReceiveIT(uint8_t *pData, size_t size)
 {
     /* Stub */
-    (void)pData;
-    (void)size;
+    //(void)pData;
+    //(void)size;
 }

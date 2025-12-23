@@ -1,5 +1,5 @@
 Core/Src/print.o: ../Core/Src/print.c ../Core/Inc/print.h \
- ../Core/Inc/UART_frames.h ../Core/Inc/Board1_types.h \
+ ../Core/Inc/UART_frames.h ../Core/Inc/Board_types.h \
  ../Core/Inc/rtwtypes.h ../Core/Inc/usart.h ../Core/Inc/main.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h \
  ../Core/Inc/stm32g4xx_hal_conf.h \
@@ -30,7 +30,7 @@ Core/Src/print.o: ../Core/Src/print.c ../Core/Inc/print.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart_ex.h
 ../Core/Inc/print.h:
 ../Core/Inc/UART_frames.h:
-../Core/Inc/Board1_types.h:
+../Core/Inc/Board_types.h:
 ../Core/Inc/rtwtypes.h:
 ../Core/Inc/usart.h:
 ../Core/Inc/main.h:

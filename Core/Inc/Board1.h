@@ -19,13 +19,14 @@
 
 #ifndef Board1_h_
 #define Board1_h_
+
 #ifndef Board1_COMMON_INCLUDES_
 #define Board1_COMMON_INCLUDES_
 #include "rtwtypes.h"
 #include "math.h"
 #endif                                 /* Board1_COMMON_INCLUDES_ */
 
-#include "Board1_types.h"
+#include <Board_types.h>
 
 /* Macros for accessing real-time model data structure */
 #ifndef rtmGetErrorStatus

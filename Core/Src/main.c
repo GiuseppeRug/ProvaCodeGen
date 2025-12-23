@@ -17,6 +17,7 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+#include <Board_types.h>
 #include "main.h"
 #include "usart.h"
 #include "gpio.h"
@@ -24,7 +25,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "Board1.h"
-#include "Board1_types.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

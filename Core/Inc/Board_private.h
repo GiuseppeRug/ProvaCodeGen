@@ -19,8 +19,8 @@
 
 #ifndef Board1_private_h_
 #define Board1_private_h_
+#include <Board_types.h>
 #include "rtwtypes.h"
-#include "Board1_types.h"
 #endif                                 /* Board1_private_h_ */
 
 /*
