@@ -1,7 +1,9 @@
 #ifndef INC_UART_FRAMES_H_
 #define INC_UART_FRAMES_H_
 
-#include <Board_types.h>
+#include <sensors.h>
+#include <states.h>
+#include <decision.h>
 
 /* --- Dimensioni dei tipi base dei sensori --- */
 

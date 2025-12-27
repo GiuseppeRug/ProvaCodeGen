@@ -7,22 +7,20 @@
  *
  * Code generated for Simulink model 'Board1'.
  *
- * Model version                  : 2.60
+ * Model version                  : 2.69
  * Simulink Coder version         : 24.1 (R2024a) 19-Nov-2023
- * C/C++ source code generated on : Tue Dec 23 15:50:49 2025
+ * C/C++ source code generated on : Sat Dec 27 17:04:03 2025
  *
  * Target selection: ert.tlc
- * Embedded hardware selection: Intel->x86-64 (Windows64)
+ * Embedded hardware selection: ARM Compatible->ARM Cortex-M
  * Code generation objectives: Unspecified
  * Validation result: Not run
  */
 
-#include <Board_types.h>
 #include "Board1.h"
+#include "enums.h"
 #include "rtwtypes.h"
-#include "serialize.h"
-#include "deserialize.h"
-#include "stubFunctions.h"
+#include "ActionsModel.h"
 
 /* Named constants for Chart: '<Root>/SupervisorB1' */
 #define B_IN_StateCoherenceVerification ((uint8_T)3U)
@@ -51,6 +49,9 @@
 #define Board1_SIZE_LOCAL_STATE_B2     ((uint8_T)16U)
 #define Board_IN_EmergencyStateAnalysis ((uint8_T)2U)
 
+/* Block signals (default storage) */
+B_Board1_T Board1_B;
+
 /* Block states (default storage) */
 DW_Board1_T Board1_DW;
 
@@ -65,7 +66,21 @@ static RT_MODEL_Board1_T Board1_M_;
 RT_MODEL_Board1_T *const Board1_M = &Board1_M_;
 
 /* Forward declaration for local functions */
+static ENUM_Actuator Board1_actuatorSelection(ENUM_Actuator lastActuator);
 static ENUM_UserAction Board1_computeUserAction(int16_T x_lever, int16_T y_lever);
+
+/* Function for Chart: '<Root>/SupervisorB1' */
+static ENUM_Actuator Board1_actuatorSelection(ENUM_Actuator lastActuator)
+{
+  ENUM_Actuator nextActuator;
+  if (lastActuator == BOARD1) {
+    nextActuator = BOARD2;
+  } else {
+    nextActuator = BOARD1;
+  }
+
+  return nextActuator;
+}
 
 /* Function for Chart: '<Root>/SupervisorB1' */
 static ENUM_UserAction Board1_computeUserAction(int16_T x_lever, int16_T y_lever)
@@ -91,28 +106,22 @@ void Board1_step(void)
   real_T continua_prev;
 
   /* Chart: '<Root>/SupervisorB1' incorporates:
-   *  Inport: '<Root>/In1'
    *  Inport: '<Root>/batteryLevel'
+   *  Inport: '<Root>/continua'
    *  Inport: '<Root>/speed'
    *  Inport: '<Root>/temperature'
-   *  Outport: '<Root>/board1GlobalState'
+   *  Outport: '<Root>/roverAction1'
+   *  Outport: '<Root>/safeAction1'
+   *  Outport: '<Root>/setPoint1'
    */
   continua_prev = Board1_DW.continua_start;
-  Board1_DW.continua_start = Board1_U.In1;
+  Board1_DW.continua_start = Board1_U.continua;
   if (Board1_DW.is_active_c15_Board1 == 0U) {
     Board1_DW.is_active_c15_Board1 = 1U;
+    Board1_DW.board1Decision.actuator = BOARD1;
 
-    /*  board1Decision.actuator = ENUM_Actuator.BOARD1;
-       board1Decision.userAction = ENUM_UserAction.UA_NONE;
-       inizializzaizone fasulla di decision con interi e non enum */
-    Board1_DW.board1Decision.actuator = 1;
-    Board1_DW.board1Decision.roverAction = 2;
-    Board1_DW.board1Decision.safeAction = 3;
-
-    /* Outport: '<Root>/currentUserAction' */
-    /*  variabili locali
-       Inizializzazione valori di output */
-    Board1_Y.currentUserAction = UA_NONE;
+    /* Outport: '<Root>/currentUserAction1' */
+    Board1_Y.currentUserAction1 = UA_NONE;
     Board1_DW.is_RoverState = Board1_IN_NotCommunicating;
   } else if (Board1_DW.is_RoverState == Board1_IN_CommunicationPhase) {
     switch (Board1_DW.is_CommunicationPhase) {
@@ -125,13 +134,32 @@ void Board1_step(void)
 
        case Board_IN_EmergencyStateAnalysis:
         Board1_DW.is_ComputeDecision = Board1_IN_UserActionComputation;
+        Board1_DW.board1Decision.userAction = Board1_computeUserAction
+          (Board1_B.board1GlobalState.localStateB2.remoteController.x_lever,
+           Board1_B.board1GlobalState.localStateB2.remoteController.y_lever);
 
-        /* Outport: '<Root>/currentUserAction' incorporates:
-         *  Outport: '<Root>/board1GlobalState'
+        /* Outport: '<Root>/currentUserAction1' */
+        /*  continue braking */
+        Board1_Y.currentUserAction1 = Board1_DW.board1Decision.userAction;
+
+        /* ModelReference: '<Root>/ModelAction' incorporates:
+         *  Outport: '<Root>/currentUserAction1'
+         *  Outport: '<Root>/roverAction1'
+         *  Outport: '<Root>/safeAction1'
+         *  Outport: '<Root>/setPoint1'
+         *  Outport: '<Root>/statusObstacles'
          */
-        Board1_Y.currentUserAction = Board1_computeUserAction
-          (Board1_Y.board1GlobalState.localStateB2.remoteController.x_lever,
-           Board1_Y.board1GlobalState.localStateB2.remoteController.y_lever);
+        ActionsModel_ComputeRoverAction(&Board1_Y.currentUserAction1,
+          &Board1_B.board1GlobalState.localStateB1.speed,
+          &Board1_B.board1GlobalState.localStateB2.remoteController.x_lever,
+          &Board1_B.board1GlobalState.localStateB2.remoteController.y_lever,
+          &Board1_B.board1GlobalState.localStateB2.gyroscope,
+          &Board1_B.board1GlobalState.localStateB2.sonar, &Board1_Y.setPoint,
+          &Board1_Y.roverAction, &Board1_Y.safeAction,
+          &Board1_Y.statusObstacles);
+        Board1_DW.board1Decision.roverAction = Board1_Y.roverAction;
+        Board1_DW.board1Decision.safeAction = Board1_Y.safeAction;
+        Board1_DW.board1Decision.setPoint = Board1_Y.setPoint;
         break;
 
        case B_IN_StateCoherenceVerification:
@@ -141,18 +169,19 @@ void Board1_step(void)
        default:
         /* case IN_UserActionComputation: */
         Board1_DW.is_ComputeDecision = Board1_IN_ActuatorSelection;
-
-        /*  en: board1Decision.actuator = actuatorSelection(board1Decision.actuator); */
+        Board1_DW.board1Decision.actuator = Board1_actuatorSelection
+          (Board1_DW.board1Decision.actuator);
         break;
       }
 
       if (Board1_DW.exit_port_index_ComputeDecision == 2U) {
         Board1_DW.exit_port_index_ComputeDecision = 0U;
         Board1_DW.is_CommunicationPhase = Board1_IN_ExchangeDecision;
+
+        /*  Entry exchange decision */
         Board1_DW.txPayload = Board1_SIZE_DECISION;
         Board1_DW.rxPayload = Board1_SIZE_DECISION;
-        serializeDecision(&Board1_DW.tx_buffer[0], (BUS_Decision *)
-                          &Board1_DW.board1Decision);
+        serializeDecision(&Board1_DW.tx_buffer[0], &Board1_DW.board1Decision);
         Board1_DW.is_ExchangeDecision = Board1_IN_D_Transmit;
 
         /*  Aspettando la disponibilit� del partner per trasmettere */
@@ -170,7 +199,7 @@ void Board1_step(void)
         if (Board1_DW.exit_port_index_D_Receive == 2U) {
           Board1_DW.exit_port_index_D_Receive = 0U;
           deserializeDecision(&Board1_DW.rx_buffer[0], Board1_DW.rxPayload,
-                              (BUS_Decision *)&Board1_DW.board2Decision);
+                              &Board1_DW.board2Decision);
           Board1_DW.is_ExchangeDecision = Board1_IN_Execution;
         }
         break;
@@ -215,8 +244,8 @@ void Board1_step(void)
      case Board1_IN_ExchangeGlobalState:
       switch (Board1_DW.is_ExchangeGlobalState) {
        case Boar_IN_ComputingOwnGlobalState:
-        serializeGlobalState(&Board1_DW.tx_buffer[0], (BUS_GlobalState *)
-                             &Board1_Y.board1GlobalState);
+        serializeGlobalState(&Board1_DW.tx_buffer[0],
+                             &Board1_B.board1GlobalState);
         Board1_DW.is_ExchangeGlobalState = Board1_IN_GL_Transmit;
 
         /*  Aspettando la disponibilit� del partner per trasmettere */
@@ -231,7 +260,7 @@ void Board1_step(void)
         if (Board1_DW.exit_port_index_GL_Receive == 2U) {
           Board1_DW.exit_port_index_GL_Receive = 0U;
           deserializeGlobalState(&Board1_DW.rx_buffer[0], Board1_DW.rxPayload,
-            (BUS_GlobalState *)&Board1_DW.board2GlobalState);
+            &Board1_DW.board2GlobalState);
 
           /* stampaBuffer(board2LocalState); */
           Board1_DW.is_ExchangeGlobalState = Board1_IN_NO_ACTIVE_CHILD;
@@ -265,6 +294,8 @@ void Board1_step(void)
       if (Board1_DW.exit_port_index_ExchangeGlobalS == 2U) {
         Board1_DW.exit_port_index_ExchangeGlobalS = 0U;
         Board1_DW.is_CommunicationPhase = Board1_IN_ComputeDecision;
+
+        /*  Entry compute decision */
         Board1_DW.is_ComputeDecision = B_IN_StateCoherenceVerification;
       }
       break;
@@ -279,8 +310,7 @@ void Board1_step(void)
         if (Board1_DW.exit_port_index_LS_Receive == 2U) {
           Board1_DW.exit_port_index_LS_Receive = 0U;
           deserializeLocalStateB2(&Board1_DW.rx_buffer[0], Board1_DW.rxPayload,
-            (BUS_LocalStateB2 *)&Board1_DW.board2LocalState);
-
+            &Board1_DW.board2LocalState);
           Board1_DW.is_ExchangeLocalState = Board1_IN_NO_ACTIVE_CHILD;
           Board1_DW.exit_port_index_ExchangeLocalSt = 2U;
         }
@@ -309,14 +339,16 @@ void Board1_step(void)
       if (Board1_DW.exit_port_index_ExchangeLocalSt == 2U) {
         Board1_DW.exit_port_index_ExchangeLocalSt = 0U;
         Board1_DW.is_CommunicationPhase = Board1_IN_ExchangeGlobalState;
+
+        /*  Entry exchange global state */
         Board1_DW.txPayload = Board1_SIZE_GLOBAL_STATE;
         Board1_DW.rxPayload = Board1_SIZE_GLOBAL_STATE;
         Board1_DW.is_ExchangeGlobalState = Boar_IN_ComputingOwnGlobalState;
-        Board1_Y.board1GlobalState.localStateB1 = Board1_DW.board1LocalState;
+        Board1_B.board1GlobalState.localStateB1 = Board1_DW.board1LocalState;
 
         /*  forse dovrei fare una copia del backup all'inizio del mio stato,
            siccome durante la trasmissione le variabili possono cambiare */
-        Board1_Y.board1GlobalState.localStateB2 = Board1_DW.board2LocalState;
+        Board1_B.board1GlobalState.localStateB2 = Board1_DW.board2LocalState;
       }
       break;
     }
@@ -332,10 +364,11 @@ void Board1_step(void)
     Board1_DW.board1LocalState.batteryLevel = Board1_U.batteryLevel;
     Board1_DW.is_RoverState = Board1_IN_CommunicationPhase;
     Board1_DW.is_CommunicationPhase = Board1_IN_ExchangeLocalState;
+
+    /*  Entry exchange local state */
     Board1_DW.txPayload = Board1_SIZE_LOCAL_STATE_B1;
     Board1_DW.rxPayload = Board1_SIZE_LOCAL_STATE_B2;
-    serializeLocalStateB1(&Board1_DW.tx_buffer[0], (BUS_LocalStateB1 *)
-                          &Board1_DW.board1LocalState);
+    serializeLocalStateB1(&Board1_DW.tx_buffer[0], &Board1_DW.board1LocalState);
 
     /* stampaBuffer(tx_buffer); */
     Board1_DW.is_ExchangeLocalState = Board1_IN_LS_Transmit;
@@ -350,7 +383,17 @@ void Board1_step(void)
 /* Model initialize function */
 void Board1_initialize(void)
 {
-  /* (no initialization code required) */
+  /* Model Initialize function for ModelReference Block: '<Root>/ModelAction' */
+  ActionsModel_initialize(rtmGetErrorStatusPointer(Board1_M));
+
+  /* SystemInitialize for ModelReference: '<Root>/ModelAction' incorporates:
+   *  Outport: '<Root>/currentUserAction1'
+   *  Outport: '<Root>/roverAction1'
+   *  Outport: '<Root>/safeAction1'
+   *  Outport: '<Root>/setPoint1'
+   *  Outport: '<Root>/statusObstacles'
+   */
+  ActionsModel_Init(&Board1_Y.setPoint, &Board1_Y.statusObstacles);
 }
 
 /* Model terminate function */

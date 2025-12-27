@@ -24,6 +24,10 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "Board1.h"
+
+#include "sensors.h"
+#include "decision.h"
+
 #include "print.h"
 /* USER CODE END Includes */
 
@@ -109,12 +113,12 @@ int main(void)
   Board1_U.batteryLevel = (BatteryLevel) 32.3f;
 
   // Coming from ModelAction
-  Board1_U.roverAction = RA_IDLE;
-  Board1_U.safeAction = RA_IDLE;
-  Board1_U.setPoint = (BUS_SetPoint) {32.3f, 32.3f};
+  Board1_Y.roverAction = RA_IDLE;
+  Board1_Y.safeAction = RA_IDLE;
+  Board1_Y.setPoint = (BUS_SetPoint) {32.3f, 32.3f};
 
   // Continua
-  Board1_U.In1 = 0;
+  Board1_U.continua = 0;
   // Receive che dovrebbe essere gestito dalla receive it
   Board1_DW.received = 0;
 

@@ -7,20 +7,20 @@
  *
  * Code generated for Simulink model 'Board1'.
  *
- * Model version                  : 2.60
+ * Model version                  : 2.69
  * Simulink Coder version         : 24.1 (R2024a) 19-Nov-2023
- * C/C++ source code generated on : Tue Dec 23 15:50:49 2025
+ * C/C++ source code generated on : Sat Dec 27 17:04:03 2025
  *
  * Target selection: ert.tlc
- * Embedded hardware selection: Intel->x86-64 (Windows64)
+ * Embedded hardware selection: ARM Compatible->ARM Cortex-M
  * Code generation objectives: Unspecified
  * Validation result: Not run
  */
 
 #ifndef Board1_private_h_
 #define Board1_private_h_
-#include <Board_types.h>
 #include "rtwtypes.h"
+#include "Board1_types.h"
 #endif                                 /* Board1_private_h_ */
 
 /*
