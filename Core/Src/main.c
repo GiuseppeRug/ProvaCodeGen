@@ -106,6 +106,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
   clearScreen();
   printMsg("Begin B1\r\n");
+  UART_PrintFrameSizes();
+
   HAL_GPIO_WritePin(RTR_OUT_GPIO_Port, RTR_OUT_Pin,GPIO_PIN_RESET);
   // Coming from Sensors
   Board1_U.speed = (BUS_Speed) {32.3f, 32.3f, 32.3f, 32.3f};

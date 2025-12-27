@@ -43,7 +43,7 @@
 #define Board1_IN_ReceivingRTR         ((uint8_T)1U)
 #define Board1_IN_Trasmit              ((uint8_T)2U)
 #define Board1_IN_UserActionComputation ((uint8_T)4U)
-#define Board1_SIZE_DECISION           ((uint8_T)24U)
+#define Board1_SIZE_DECISION           ((uint8_T)12U)
 #define Board1_SIZE_GLOBAL_STATE       ((uint8_T)40U)
 #define Board1_SIZE_LOCAL_STATE_B1     ((uint8_T)24U)
 #define Board1_SIZE_LOCAL_STATE_B2     ((uint8_T)16U)
