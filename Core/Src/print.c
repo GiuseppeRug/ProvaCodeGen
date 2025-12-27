@@ -97,7 +97,7 @@ void printDecision(const BUS_Decision *d) {
 	snprintf(msg, sizeof(msg), "  setPoint(Left)=%d\r\n", (int) d->setPoint.leftAxis);
 	uartPrint(msg);
 
-	snprintf(msg, sizeof(msg), "  setPoint(Right)=%d\r\n", (int) d->setPoint.leftAxis);
+	snprintf(msg, sizeof(msg), "  setPoint(Right)=%d\r\n", (int) d->setPoint.rightAxis);
 	uartPrint(msg);
 }
 
