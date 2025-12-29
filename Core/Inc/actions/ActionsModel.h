@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'ActionsModel'.
  *
- * Model version                  : 2.22
- * Simulink Coder version         : 24.1 (R2024a) 19-Nov-2023
- * C/C++ source code generated on : Sat Dec 27 17:03:45 2025
+ * Model version                  : 2.25
+ * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
+ * C/C++ source code generated on : Mon Dec 29 16:30:16 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -31,9 +31,8 @@
 #include "ActionsModel_types.h"
 
 /* user code (top of header file) */
-#include "serialize.h"
-#include "deserialize.h"
-#include "stubFunctions.h"
+#include "sensors.h"
+#include "enums.h"
 
 extern void ActionsModel_Init(BUS_SetPoint *rty_setPoint, ENUM_TrackingObstacles
   *rty_statusObstacles);

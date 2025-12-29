@@ -38,6 +38,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define Board1_IN_Execution            ((uint8_T)3U)
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -106,7 +107,7 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   clearScreen();
-  printMsg("PROVA COD GEN B1\r\n");
+  printMsg("PROVA COD GEN B11\r\n");
 
   uint8_t flagStampa = 1;
 
@@ -122,9 +123,6 @@ int main(void)
 
   // Continua
   Board1_U.continua = 0;
-
-  // Receive che dovrebbe essere gestito dalla receive it
-  Board1_DW.received = 0;
 
   Board1_initialize();
   /* USER CODE END 2 */

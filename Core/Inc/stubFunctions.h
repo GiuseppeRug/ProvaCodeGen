@@ -9,10 +9,21 @@
 
 /* Prototipi delle funzioni stub */
 
-uint8_t CheckRTR(void);
+/* Trasmissione */
 
-void UartTransmitIT(uint8_t *pData, size_t size);
+uint8_t checkRTR(void);
 
-void UartReceiveIT(uint8_t *pData, size_t size);
+void UART_TransmitIT(uint8_t *pData, size_t size);
+
+
+/* Ricezione */
+
+void setRTR();
+
+void resetRTR();
+
+void UART_ReceiveIT(uint8_t *pData, size_t size);
+
+uint8_t hasReceived();
 
 #endif /* INC_STUBFUNCTIONS_H_ */

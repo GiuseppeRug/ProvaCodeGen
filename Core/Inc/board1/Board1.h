@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Board1'.
  *
- * Model version                  : 2.69
- * Simulink Coder version         : 24.1 (R2024a) 19-Nov-2023
- * C/C++ source code generated on : Sat Dec 27 17:04:03 2025
+ * Model version                  : 2.109
+ * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
+ * C/C++ source code generated on : Mon Dec 29 16:31:01 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -21,6 +21,7 @@
 #define Board1_h_
 #ifndef Board1_COMMON_INCLUDES_
 #define Board1_COMMON_INCLUDES_
+#include <stdio.h>
 #include "rtwtypes.h"
 #include "math.h"
 #endif                                 /* Board1_COMMON_INCLUDES_ */
@@ -57,8 +58,8 @@ typedef struct {
 /* Block states (default storage) for system '<Root>' */
 typedef struct {
   BUS_GlobalState board2GlobalState;   /* '<Root>/SupervisorB1' */
-  BUS_Decision board1Decision;         /* '<Root>/SupervisorB1' */
   BUS_Decision board2Decision;         /* '<Root>/SupervisorB1' */
+  BUS_Decision board1Decision;         /* '<Root>/SupervisorB1' */
   BUS_LocalStateB1 board1LocalState;   /* '<Root>/SupervisorB1' */
   BUS_LocalStateB2 board2LocalState;   /* '<Root>/SupervisorB1' */
   real_T continua_start;               /* '<Root>/SupervisorB1' */
@@ -73,9 +74,10 @@ typedef struct {
   uint32_T exit_port_index_ExchangeLocalSt;/* '<Root>/SupervisorB1' */
   uint32_T exit_port_index_LS_Receive; /* '<Root>/SupervisorB1' */
   uint32_T exit_port_index_LS_Transmit;/* '<Root>/SupervisorB1' */
-  uint8_T tx_buffer[64];               /* '<Root>/SupervisorB1' */
-  uint8_T rx_buffer[64];               /* '<Root>/SupervisorB1' */
-  uint8_T received;                    /* '<Root>/SupervisorB1' */
+  uint8_T Board1RTR;                   /* '<Root>/Data Store Memory' */
+  uint8_T Board2RTR;                   /* '<Root>/Data Store Memory1' */
+  uint8_T Board1Received;              /* '<Root>/Data Store Memory2' */
+  uint8_T Board2Received;              /* '<Root>/Data Store Memory3' */
   uint8_T txPayload;                   /* '<Root>/SupervisorB1' */
   uint8_T rxPayload;                   /* '<Root>/SupervisorB1' */
   uint8_T is_active_c15_Board1;        /* '<Root>/SupervisorB1' */
@@ -96,15 +98,17 @@ typedef struct {
   real32_T temperature;                /* '<Root>/temperature' */
   real32_T batteryLevel;               /* '<Root>/batteryLevel' */
   real_T continua;                     /* '<Root>/continua' */
+  uint8_T rx_buffer[64];               /* '<Root>/rx_buffer' */
 } ExtU_Board1_T;
 
 /* External outputs (root outports fed by signals with default storage) */
 typedef struct {
-  BUS_SetPoint setPoint;              /* '<Root>/setPoint1' */
-  ENUM_RoverAction roverAction;       /* '<Root>/roverAction1' */
-  ENUM_SafeAction safeAction;         /* '<Root>/safeAction1' */
+  uint8_T tx_buffer[64];               /* '<Root>/tx_buffer' */
+  BUS_SetPoint setPoint;               /* '<Root>/setPoint' */
+  ENUM_RoverAction roverAction;        /* '<Root>/roverAction' */
+  ENUM_SafeAction safeAction;          /* '<Root>/safeAction' */
   ENUM_TrackingObstacles statusObstacles;/* '<Root>/statusObstacles' */
-  ENUM_UserAction currentUserAction1;  /* '<Root>/currentUserAction1' */
+  ENUM_UserAction currentUserAction;   /* '<Root>/currentUserAction' */
 } ExtY_Board1_T;
 
 /* Real-time Model Data Structure */

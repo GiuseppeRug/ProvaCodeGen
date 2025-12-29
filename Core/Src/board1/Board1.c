@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Board1'.
  *
- * Model version                  : 2.69
- * Simulink Coder version         : 24.1 (R2024a) 19-Nov-2023
- * C/C++ source code generated on : Sat Dec 27 17:04:03 2025
+ * Model version                  : 3.2
+ * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
+ * C/C++ source code generated on : Mon Dec 29 17:09:03 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -68,6 +68,8 @@ RT_MODEL_Board1_T *const Board1_M = &Board1_M_;
 /* Forward declaration for local functions */
 static ENUM_Actuator Board1_actuatorSelection(ENUM_Actuator lastActuator);
 static ENUM_UserAction Board1_computeUserAction(int16_T x_lever, int16_T y_lever);
+static ENUM_UserAction Board1_continueBraking(ENUM_UserAction currentUserAction,
+  ENUM_UserAction lastUserAction);
 
 /* Function for Chart: '<Root>/SupervisorB1' */
 static ENUM_Actuator Board1_actuatorSelection(ENUM_Actuator lastActuator)
@@ -100,6 +102,27 @@ static ENUM_UserAction Board1_computeUserAction(int16_T x_lever, int16_T y_lever
   return userAction;
 }
 
+/* Function for Chart: '<Root>/SupervisorB1' */
+static ENUM_UserAction Board1_continueBraking(ENUM_UserAction currentUserAction,
+  ENUM_UserAction lastUserAction)
+{
+  ENUM_UserAction userAction;
+  userAction = currentUserAction;
+  if (currentUserAction == UA_NONE) {
+    switch (lastUserAction) {
+     case UA_BRAKING_SMOOTH:
+      userAction = UA_BRAKING_SMOOTH;
+      break;
+
+     case UA_BRAKING_HARD:
+      userAction = UA_BRAKING_HARD;
+      break;
+    }
+  }
+
+  return userAction;
+}
+
 /* Model step function */
 void Board1_step(void)
 {
@@ -108,20 +131,23 @@ void Board1_step(void)
   /* Chart: '<Root>/SupervisorB1' incorporates:
    *  Inport: '<Root>/batteryLevel'
    *  Inport: '<Root>/continua'
+   *  Inport: '<Root>/rx_buffer'
    *  Inport: '<Root>/speed'
    *  Inport: '<Root>/temperature'
-   *  Outport: '<Root>/roverAction1'
-   *  Outport: '<Root>/safeAction1'
-   *  Outport: '<Root>/setPoint1'
+   *  Outport: '<Root>/currentUserAction'
+   *  Outport: '<Root>/roverAction'
+   *  Outport: '<Root>/safeAction'
+   *  Outport: '<Root>/setPoint'
+   *  Outport: '<Root>/tx_buffer'
    */
   continua_prev = Board1_DW.continua_start;
   Board1_DW.continua_start = Board1_U.continua;
-  if (Board1_DW.is_active_c15_Board1 == 0U) {
+  if (Board1_DW.is_active_c15_Board1 == 0) {
     Board1_DW.is_active_c15_Board1 = 1U;
     Board1_DW.board1Decision.actuator = BOARD1;
 
-    /* Outport: '<Root>/currentUserAction1' */
-    Board1_Y.currentUserAction1 = UA_NONE;
+    /* Outport: '<Root>/currentUserAction' */
+    Board1_Y.currentUserAction = UA_NONE;
     Board1_DW.is_RoverState = Board1_IN_NotCommunicating;
   } else if (Board1_DW.is_RoverState == Board1_IN_CommunicationPhase) {
     switch (Board1_DW.is_CommunicationPhase) {
@@ -137,26 +163,26 @@ void Board1_step(void)
         Board1_DW.board1Decision.userAction = Board1_computeUserAction
           (Board1_B.board1GlobalState.localStateB2.remoteController.x_lever,
            Board1_B.board1GlobalState.localStateB2.remoteController.y_lever);
+        Board1_DW.board1Decision.userAction = Board1_continueBraking
+          (Board1_DW.board1Decision.userAction, Board1_Y.currentUserAction);
 
-        /* Outport: '<Root>/currentUserAction1' */
-        /*  continue braking */
-        Board1_Y.currentUserAction1 = Board1_DW.board1Decision.userAction;
+        /* Outport: '<Root>/currentUserAction' */
+        Board1_Y.currentUserAction = Board1_DW.board1Decision.userAction;
 
         /* ModelReference: '<Root>/ModelAction' incorporates:
-         *  Outport: '<Root>/currentUserAction1'
-         *  Outport: '<Root>/roverAction1'
-         *  Outport: '<Root>/safeAction1'
-         *  Outport: '<Root>/setPoint1'
+         *  Outport: '<Root>/currentUserAction'
+         *  Outport: '<Root>/roverAction'
+         *  Outport: '<Root>/safeAction'
+         *  Outport: '<Root>/setPoint'
          *  Outport: '<Root>/statusObstacles'
          */
-        ActionsModel_ComputeRoverAction(&Board1_Y.currentUserAction1,
+        ActionsModel_ComputeRoverAction(&Board1_Y.currentUserAction,
           &Board1_B.board1GlobalState.localStateB1.speed,
           &Board1_B.board1GlobalState.localStateB2.remoteController.x_lever,
           &Board1_B.board1GlobalState.localStateB2.remoteController.y_lever,
           &Board1_B.board1GlobalState.localStateB2.gyroscope,
           &Board1_B.board1GlobalState.localStateB2.sonar, &Board1_Y.setPoint,
-          &Board1_Y.roverAction, &Board1_Y.safeAction,
-          &Board1_Y.statusObstacles);
+          &Board1_Y.roverAction, &Board1_Y.safeAction, &Board1_Y.statusObstacles);
         Board1_DW.board1Decision.roverAction = Board1_Y.roverAction;
         Board1_DW.board1Decision.safeAction = Board1_Y.safeAction;
         Board1_DW.board1Decision.setPoint = Board1_Y.setPoint;
@@ -181,7 +207,7 @@ void Board1_step(void)
         /*  Entry exchange decision */
         Board1_DW.txPayload = Board1_SIZE_DECISION;
         Board1_DW.rxPayload = Board1_SIZE_DECISION;
-        serializeDecision(&Board1_DW.tx_buffer[0], &Board1_DW.board1Decision);
+        serializeDecision(&Board1_Y.tx_buffer[0], &Board1_DW.board1Decision);
         Board1_DW.is_ExchangeDecision = Board1_IN_D_Transmit;
 
         /*  Aspettando la disponibilit� del partner per trasmettere */
@@ -192,23 +218,28 @@ void Board1_step(void)
      case Board1_IN_ExchangeDecision:
       switch (Board1_DW.is_ExchangeDecision) {
        case Board1_IN_D_Receive:
-        if (Board1_DW.received == 1) {
+        if (hasReceived() == 1) {
+          resetRTR();
           Board1_DW.exit_port_index_D_Receive = 2U;
         }
 
         if (Board1_DW.exit_port_index_D_Receive == 2U) {
           Board1_DW.exit_port_index_D_Receive = 0U;
-          deserializeDecision(&Board1_DW.rx_buffer[0], Board1_DW.rxPayload,
+          deserializeDecision(&Board1_U.rx_buffer[0], Board1_DW.rxPayload,
                               &Board1_DW.board2Decision);
           Board1_DW.is_ExchangeDecision = Board1_IN_Execution;
+
+          /* printGlobalState(board1GlobalState);
+             printGlobalState(board2GlobalState); */
         }
         break;
 
        case Board1_IN_D_Transmit:
         if (Board1_DW.is_D_Transmit == Board1_IN_ReceivingRTR) {
-          if (CheckRTR() != 0) {
+          /*  RTR ricevuta */
+          if (checkRTR() != 0) {
             Board1_DW.is_D_Transmit = Board1_IN_Trasmit;
-            UartTransmitIT(&Board1_DW.tx_buffer[0], Board1_DW.txPayload);
+            UART_TransmitIT(&Board1_Y.tx_buffer[0], Board1_DW.txPayload);
           }
         } else {
           /* case IN_Trasmit: */
@@ -221,8 +252,8 @@ void Board1_step(void)
           Board1_DW.is_ExchangeDecision = Board1_IN_D_Receive;
 
           /* Pronto a ricevere */
-          Board1_DW.received = 0;
-          UartReceiveIT(&Board1_DW.rx_buffer[0], Board1_DW.rxPayload);
+          UART_ReceiveIT(&Board1_U.rx_buffer[0], Board1_DW.rxPayload);
+          setRTR();
         }
         break;
 
@@ -245,8 +276,7 @@ void Board1_step(void)
      case Board1_IN_ExchangeGlobalState:
       switch (Board1_DW.is_ExchangeGlobalState) {
        case Boar_IN_ComputingOwnGlobalState:
-        serializeGlobalState(&Board1_DW.tx_buffer[0],
-                             &Board1_B.board1GlobalState);
+        serializeGlobalState(&Board1_Y.tx_buffer[0], &Board1_B.board1GlobalState);
         Board1_DW.is_ExchangeGlobalState = Board1_IN_GL_Transmit;
 
         /*  Aspettando la disponibilit� del partner per trasmettere */
@@ -254,13 +284,14 @@ void Board1_step(void)
         break;
 
        case Board1_IN_GL_Receive:
-        if (Board1_DW.received == 1) {
+        if (hasReceived() == 1) {
+          resetRTR();
           Board1_DW.exit_port_index_GL_Receive = 2U;
         }
 
         if (Board1_DW.exit_port_index_GL_Receive == 2U) {
           Board1_DW.exit_port_index_GL_Receive = 0U;
-          deserializeGlobalState(&Board1_DW.rx_buffer[0], Board1_DW.rxPayload,
+          deserializeGlobalState(&Board1_U.rx_buffer[0], Board1_DW.rxPayload,
             &Board1_DW.board2GlobalState);
 
           /* stampaBuffer(board2LocalState); */
@@ -272,9 +303,10 @@ void Board1_step(void)
        default:
         /* case IN_GL_Transmit: */
         if (Board1_DW.is_GL_Transmit == Board1_IN_ReceivingRTR) {
-          if (CheckRTR() != 0) {
+          /*  RTR ricevuta */
+          if (checkRTR() != 0) {
             Board1_DW.is_GL_Transmit = Board1_IN_Trasmit;
-            UartTransmitIT(&Board1_DW.tx_buffer[0], Board1_DW.txPayload);
+            UART_TransmitIT(&Board1_Y.tx_buffer[0], Board1_DW.txPayload);
           }
         } else {
           /* case IN_Trasmit: */
@@ -287,8 +319,8 @@ void Board1_step(void)
           Board1_DW.is_ExchangeGlobalState = Board1_IN_GL_Receive;
 
           /* Pronto a ricevere */
-          Board1_DW.received = 0;
-          UartReceiveIT(&Board1_DW.rx_buffer[0], Board1_DW.rxPayload);
+          UART_ReceiveIT(&Board1_U.rx_buffer[0], Board1_DW.rxPayload);
+          setRTR();
         }
         break;
       }
@@ -305,13 +337,14 @@ void Board1_step(void)
      default:
       /* case IN_ExchangeLocalState: */
       if (Board1_DW.is_ExchangeLocalState == Board1_IN_LS_Receive) {
-        if (Board1_DW.received == 1) {
+        if (hasReceived() == 1) {
+          resetRTR();
           Board1_DW.exit_port_index_LS_Receive = 2U;
         }
 
         if (Board1_DW.exit_port_index_LS_Receive == 2U) {
           Board1_DW.exit_port_index_LS_Receive = 0U;
-          deserializeLocalStateB2(&Board1_DW.rx_buffer[0], Board1_DW.rxPayload,
+          deserializeLocalStateB2(&Board1_U.rx_buffer[0], Board1_DW.rxPayload,
             &Board1_DW.board2LocalState);
           Board1_DW.is_ExchangeLocalState = Board1_IN_NO_ACTIVE_CHILD;
           Board1_DW.exit_port_index_ExchangeLocalSt = 2U;
@@ -319,9 +352,10 @@ void Board1_step(void)
       } else {
         /* case IN_LS_Transmit: */
         if (Board1_DW.is_LS_Transmit == Board1_IN_ReceivingRTR) {
-          if (CheckRTR() != 0) {
+          /*  RTR ricevuta */
+          if (checkRTR() != 0) {
             Board1_DW.is_LS_Transmit = Board1_IN_Trasmit;
-            UartTransmitIT(&Board1_DW.tx_buffer[0], Board1_DW.txPayload);
+            UART_TransmitIT(&Board1_Y.tx_buffer[0], Board1_DW.txPayload);
           }
         } else {
           /* case IN_Trasmit: */
@@ -334,8 +368,8 @@ void Board1_step(void)
           Board1_DW.is_ExchangeLocalState = Board1_IN_LS_Receive;
 
           /* Pronto a ricevere */
-          Board1_DW.received = 0;
-          UartReceiveIT(&Board1_DW.rx_buffer[0], Board1_DW.rxPayload);
+          UART_ReceiveIT(&Board1_U.rx_buffer[0], Board1_DW.rxPayload);
+          setRTR();
         }
       }
 
@@ -371,7 +405,7 @@ void Board1_step(void)
     /*  Entry exchange local state */
     Board1_DW.txPayload = Board1_SIZE_LOCAL_STATE_B1;
     Board1_DW.rxPayload = Board1_SIZE_LOCAL_STATE_B2;
-    serializeLocalStateB1(&Board1_DW.tx_buffer[0], &Board1_DW.board1LocalState);
+    serializeLocalStateB1(&Board1_Y.tx_buffer[0], &Board1_DW.board1LocalState);
 
     /* stampaBuffer(tx_buffer); */
     Board1_DW.is_ExchangeLocalState = Board1_IN_LS_Transmit;
@@ -390,10 +424,10 @@ void Board1_initialize(void)
   ActionsModel_initialize(rtmGetErrorStatusPointer(Board1_M));
 
   /* SystemInitialize for ModelReference: '<Root>/ModelAction' incorporates:
-   *  Outport: '<Root>/currentUserAction1'
-   *  Outport: '<Root>/roverAction1'
-   *  Outport: '<Root>/safeAction1'
-   *  Outport: '<Root>/setPoint1'
+   *  Outport: '<Root>/currentUserAction'
+   *  Outport: '<Root>/roverAction'
+   *  Outport: '<Root>/safeAction'
+   *  Outport: '<Root>/setPoint'
    *  Outport: '<Root>/statusObstacles'
    */
   ActionsModel_Init(&Board1_Y.setPoint, &Board1_Y.statusObstacles);
